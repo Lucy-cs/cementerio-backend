@@ -1,0 +1,49 @@
+// index.js
+const express = require("express");
+require("dotenv").config();
+const { getConnection } = require("./config/db");
+
+// Middlewares base
+const { setupSecurity } = require("./middlewares/security");
+const { setupLogger } = require("./middlewares/logger");
+
+const app = express();
+
+// Limitar tamaño del body (protección DoS) y soportar x-www-form-urlencoded
+app.use(express.json({ limit: "200kb" }));
+app.use(express.urlencoded({ extended: true, limit: "200kb" }));
+
+// Logger (request id + access log) y seguridad (helmet, CORS, rate-limit)
+setupLogger(app);
+setupSecurity(app);
+
+// Swagger UI
+const { swaggerUi, specs } = require("./docs/swagger");
+app.use("/docs", swaggerUi.serve, swaggerUi.setup(specs, { explorer: true }));
+
+// Healthcheck
+app.get("/health", (req, res) => res.json({ ok: true, requestId: req.id }));
+
+// Rutas NICHOS Y MANZANAS
+const nichosRoutes = require("./modules/nichos/nichos.routes");
+app.use("/api/nichos", nichosRoutes);
+
+const manzanasRoutes = require("./modules/manzanas/manzanas.routes");
+app.use("/api/manzanas", manzanasRoutes);
+
+
+const PORT = process.env.PORT || 3001;
+
+(async () => {
+  try {
+    await getConnection();
+    console.log("Conexión exitosa a SQL Server");
+
+    app.listen(PORT, () => {
+      console.log(`Servidor corriendo en http://localhost:${PORT}`);
+    });
+  } catch (err) {
+    console.error("Error de conexión:", err.message);
+    process.exit(1); // no arranca si la BD falló
+  }
+})();

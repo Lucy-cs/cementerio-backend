@@ -1,0 +1,30 @@
+{
+  "name": "cementerio-backend",
+  "version": "1.0.0",
+  "private": true,
+  "description": "API del Sistema de Gestión de Nichos del Cementerio No. 2",
+  "main": "index.js",
+  "scripts": {
+    "start": "node index.js",
+    "dev": "nodemon --watch . --ext js,json --signal SIGINT index.js",
+    "test": "echo \"(sin pruebas por ahora)\" && exit 0"
+  },
+  "dependencies": {
+    "cors": "^2.8.5",
+    "dotenv": "16.4.5",
+    "express": "^5.1.0",
+    "express-rate-limit": "^8.0.1",
+    "helmet": "^8.1.0",
+    "morgan": "^1.10.1",
+    "mssql": "^11.0.1",
+    "swagger-jsdoc": "^6.2.8",
+    "swagger-ui-express": "^5.0.1"
+  },
+  "devDependencies": {
+    "nodemon": "^3.1.0",
+    "swagger-autogen": "^2.23.7"
+  },
+  "engines": {
+    "node": ">=18"
+  }
+}
