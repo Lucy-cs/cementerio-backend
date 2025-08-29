@@ -59,8 +59,9 @@ const doc = {
 };
 
 // Archivos donde el autogenerador buscará tus rutas Express
-const endpointsFiles = ["./modules/nichos/nichos.routes.js",
-  "./modules/manzanas/manzanas.routes.js"];
+const endpointsFiles = ["./index.js", "./modules/nichos/nichos.routes.js",
+  "./modules/manzanas/manzanas.routes.js",
+ "./modules/propietarios/propietarios.routes.js"];
 
 
 // Archivo de salida

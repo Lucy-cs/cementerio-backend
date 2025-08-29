@@ -24,12 +24,16 @@ app.use("/docs", swaggerUi.serve, swaggerUi.setup(specs, { explorer: true }));
 // Healthcheck
 app.get("/health", (req, res) => res.json({ ok: true, requestId: req.id }));
 
-// Rutas NICHOS Y MANZANAS
+// Rutas NICHOS Y MANZANAS Y PROPIETARIOS
 const nichosRoutes = require("./modules/nichos/nichos.routes");
 app.use("/api/nichos", nichosRoutes);
 
 const manzanasRoutes = require("./modules/manzanas/manzanas.routes");
 app.use("/api/manzanas", manzanasRoutes);
+
+const propietariosRoutes = require("./modules/propietarios/propietarios.routes");
+app.use("/api/propietarios", propietariosRoutes);
+
 
 
 const PORT = process.env.PORT || 3001;

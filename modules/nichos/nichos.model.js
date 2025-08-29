@@ -1,32 +1,19 @@
-// Reglas del dominio
-const ESTADOS = ["Disponible", "Reservado", "Ocupado"];
+// modules/nichos/nichos.model.js
+const estadosSet = new Set(["Disponible", "Reservado", "Ocupado"]);
+const clean = (v) => (typeof v === "string" ? v.trim() : "");
 
-// Normaliza valores (trim y números)
-function toInt(v) {
-  if (v === undefined || v === null || v === "") return undefined;
-  const n = Number(v);
-  return Number.isFinite(n) ? n : undefined;
+function isPosInt(n) {
+  return Number.isInteger(n) && n > 0;
 }
 
-function toStr(v) {
-  return typeof v === "string" ? v.trim() : v;
-}
-
-// ---- Validaciones ----
 function validateCreate(payload = {}) {
-  const numero = toInt(payload.numero);
-  const manzana_id = toInt(payload.manzana_id);
-  const estado = toStr(payload.estado) || "Disponible";
+  const numero = Number(payload.numero);
+  const manzana_id = Number(payload.manzana_id);
+  const estado = clean(payload.estado || "Disponible");
 
-  if (!numero || numero <= 0) {
-    throw new Error("El campo 'numero' es obligatorio y debe ser un entero > 0.");
-  }
-  if (!manzana_id || manzana_id <= 0) {
-    throw new Error("El campo 'manzana_id' es obligatorio y debe ser un entero > 0.");
-  }
-  if (!ESTADOS.includes(estado)) {
-    throw new Error(`'estado' inválido. Valores: ${ESTADOS.join(", ")}`);
-  }
+  if (!isPosInt(numero)) throw new Error("'numero' debe ser entero positivo.");
+  if (!isPosInt(manzana_id)) throw new Error("'manzana_id' debe ser entero positivo.");
+  if (!estadosSet.has(estado)) throw new Error(`'estado' inválido. Use: ${[...estadosSet].join(", ")}.`);
 
   return { numero, estado, manzana_id };
 }
@@ -34,38 +21,31 @@ function validateCreate(payload = {}) {
 function validateUpdate(payload = {}) {
   const dto = {};
   if (payload.numero !== undefined) {
-    const numero = toInt(payload.numero);
-    if (!numero || numero <= 0) {
-      throw new Error("'numero' debe ser un entero > 0.");
-    }
-    dto.numero = numero;
+    const n = Number(payload.numero);
+    if (!isPosInt(n)) throw new Error("'numero' debe ser entero positivo.");
+    dto.numero = n;
   }
   if (payload.manzana_id !== undefined) {
-    const manzana_id = toInt(payload.manzana_id);
-    if (!manzana_id || manzana_id <= 0) {
-      throw new Error("'manzana_id' debe ser un entero > 0.");
-    }
-    dto.manzana_id = manzana_id;
+    const m = Number(payload.manzana_id);
+    if (!isPosInt(m)) throw new Error("'manzana_id' debe ser entero positivo.");
+    dto.manzana_id = m;
   }
   if (payload.estado !== undefined) {
-    const estado = toStr(payload.estado);
-    if (!ESTADOS.includes(estado)) {
-      throw new Error(`'estado' inválido. Valores: ${ESTADOS.join(", ")}`);
-    }
-    dto.estado = estado;
+    const e = clean(payload.estado);
+    if (!estadosSet.has(e)) throw new Error(`'estado' inválido. Use: ${[...estadosSet].join(", ")}.`);
+    dto.estado = e;
   }
-  return dto; // puede venir vacío si no mandaron campos
+  return dto; // puede venir vacío; el controlador decide si rechaza “sin cambios”
 }
 
-// Mapeo de una fila de BD a objeto de dominio (por si unificás formato)
-function fromDb(row = {}) {
+function fromDb(r = {}) {
   return {
-    id: row.id,
-    numero: row.numero,
-    estado: row.estado,
-    manzana_id: row.manzana_id,
-    manzana: row.manzana,
+    id: r.id,
+    numero: r.numero,
+    estado: r.estado,
+    manzana_id: r.manzana_id,
+    manzana: r.manzana,
   };
 }
 
-module.exports = { ESTADOS, validateCreate, validateUpdate, fromDb };
+module.exports = { validateCreate, validateUpdate, fromDb, estadosValidos: [...estadosSet] };
