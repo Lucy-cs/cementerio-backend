@@ -34,6 +34,14 @@ app.use("/api/manzanas", manzanasRoutes);
 const propietariosRoutes = require("./modules/propietarios/propietarios.routes");
 app.use("/api/propietarios", propietariosRoutes);
 
+// Rutas Catálogos
+const catalogsRoutes = require("./modules/catalogos/catalogos.routes");
+app.use("/api/catalogs", catalogsRoutes);
+
+// Rutas Auth
+const authRoutes = require("./modules/auth/auth.routes");
+app.use("/auth", authRoutes);
+
 
 
 const PORT = process.env.PORT || 3001;
