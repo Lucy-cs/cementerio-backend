@@ -1,5 +1,6 @@
 // modules/nichos/nichos.model.js
-const estadosSet = new Set(["Disponible", "Reservado", "Ocupado"]);
+// Estados válidos alineados con constraint CK_nichos_estado
+const estadosSet = new Set(["Disponible", "Reservado", "Ocupado", "Mantenimiento", "Bloqueado"]);
 const clean = (v) => (typeof v === "string" ? v.trim() : "");
 
 function isPosInt(n) {

@@ -26,7 +26,7 @@ const doc = {
           numero: { type: "integer", example: 12 },
           estado: {
             type: "string",
-            enum: ["Disponible", "Reservado", "Ocupado"],
+            enum: ["Disponible", "Reservado", "Ocupado", "Mantenimiento", "Bloqueado"],
             example: "Disponible",
           },
           manzana_id: { type: "integer", example: 2 },
@@ -40,7 +40,7 @@ const doc = {
           numero: { type: "integer", example: 10 },
           estado: {
             type: "string",
-            enum: ["Disponible", "Reservado", "Ocupado"],
+            enum: ["Disponible", "Reservado", "Ocupado", "Mantenimiento", "Bloqueado"],
             default: "Disponible",
           },
           manzana_id: { type: "integer", example: 1 },
@@ -52,9 +52,27 @@ const doc = {
           numero: { type: "integer", example: 15 },
           estado: {
             type: "string",
-            enum: ["Disponible", "Reservado", "Ocupado"],
+            enum: ["Disponible", "Reservado", "Ocupado", "Mantenimiento", "Bloqueado"],
           },
           manzana_id: { type: "integer", example: 3 },
+        },
+      },
+      CambioEstadoRequest: {
+        type: 'object',
+        required: ['nuevo_estado'],
+        properties: {
+          nuevo_estado: { type: 'string', enum: ["Disponible", "Reservado", "Ocupado", "Mantenimiento", "Bloqueado"], example: 'Reservado' },
+          motivo: { type: 'string', example: 'Reserva por solicitud #456', nullable: true }
+        }
+      },
+      HistorialEstadoItem: {
+        type: 'object',
+        properties: {
+          fecha: { type: 'string', example: '2025-09-10T16:32:11Z' },
+          de: { type: 'string', example: 'Disponible' },
+          a: { type: 'string', example: 'Reservado' },
+          motivo: { type: 'string', example: 'Reserva por solicitud #456', nullable: true },
+          usuario_id: { type: 'integer', example: 7 }
         },
       },
       LoginRequest: {

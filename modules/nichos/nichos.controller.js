@@ -139,3 +139,65 @@ exports.eliminar = async (req, res) => {
       .json({ message: "Error al eliminar nicho", error: err.message });
   }
 };
+
+// PATCH /api/nichos/:id/estado
+exports.cambiarEstado = async (req, res) => {
+  try {
+    const id = Number(req.params.id);
+    if (!Number.isInteger(id) || id <= 0)
+      return res.status(400).json({ message: "Id inválido" });
+
+    const { nuevo_estado, motivo } = req.body || {};
+    if (!nuevo_estado || typeof nuevo_estado !== 'string') {
+      return res.status(400).json({ message: "'nuevo_estado' requerido" });
+    }
+    if (!M.estadosValidos.includes(nuevo_estado)) {
+      return res.status(400).json({ message: `Estado inválido. Use: ${M.estadosValidos.join(', ')}` });
+    }
+
+    // Reglas de transición
+    const permitido = await service.obtenerPorId(id);
+    if (!permitido) return res.status(404).json({ message: 'Nicho no encontrado' });
+    const actual = permitido.estado;
+    const transiciones = {
+      'Disponible': ['Reservado','Ocupado','Mantenimiento','Bloqueado'],
+      'Reservado': ['Disponible','Ocupado','Bloqueado'],
+      'Ocupado': ['Mantenimiento','Bloqueado'],
+      'Mantenimiento': ['Disponible','Reservado','Ocupado','Bloqueado'],
+      'Bloqueado': ['Disponible']
+    };
+    if (!transiciones[actual] || !transiciones[actual].includes(nuevo_estado)) {
+      return res.status(400).json({ message: `Transición no permitida (${actual} -> ${nuevo_estado})` });
+    }
+    if (['Mantenimiento','Bloqueado'].includes(nuevo_estado) && !motivo) {
+      return res.status(400).json({ message: "'motivo' es obligatorio para estados Mantenimiento o Bloqueado" });
+    }
+
+    const usuario_id = req.auth?.sub || null;
+    const cambiado = await service.cambiarEstado({ id, nuevo_estado, motivo, usuario_id });
+    if (!cambiado) return res.status(404).json({ message: 'Nicho no encontrado' });
+    if (cambiado.noCambio) return res.status(200).json({ message: 'Sin cambio', ...M.fromDb(cambiado.current) });
+    return res.json(M.fromDb(cambiado));
+  } catch (err) {
+    const isUser = /requerido|inválido|Transición|obligatorio/i.test(err.message||'');
+    return res.status(isUser?400:500).json({ message: isUser?err.message:'Error al cambiar estado', error: err.message });
+  }
+};
+
+// GET /api/nichos/:id/historial
+exports.historial = async (req, res) => {
+  try {
+    const id = Number(req.params.id);
+    if (!Number.isInteger(id) || id <= 0)
+      return res.status(400).json({ message: 'Id inválido' });
+
+    // opcional: validar que el nicho exista (para diferenciar 404 de lista vacía)
+    const existe = await service.obtenerPorId(id);
+    if (!existe) return res.status(404).json({ message: 'Nicho no encontrado' });
+
+    const data = await service.historialEstado(id);
+    return res.json(data);
+  } catch (err) {
+    return res.status(500).json({ message: 'Error al obtener historial', error: err.message });
+  }
+};

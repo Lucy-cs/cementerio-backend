@@ -1,6 +1,7 @@
 const express = require("express");
 const router = express.Router();
 const ctrl = require("./nichos.controller");
+const { requireAuth } = require("../../middlewares/auth");
 
 // GET /api/nichos
 router.get("/", (req, res, next) => {
@@ -75,5 +76,48 @@ router.delete("/:id", (req, res, next) => {
 });
 
 
+
+// PATCH /api/nichos/{id}/estado
+router.patch('/:id/estado', requireAuth, (req, res, next) => {
+  /*
+    #swagger.tags = ['Nichos']
+    #swagger.summary = 'Cambiar estado de un nicho'
+    #swagger.path = '/api/nichos/{id}/estado'
+    #swagger.security = [{ bearerAuth: [] }]
+    #swagger.parameters['id'] = { in: 'path', required: true, type: 'integer' }
+    #swagger.requestBody = {
+      required: true,
+      content: {
+        'application/json': {
+          schema: {
+            type: 'object',
+            required: ['nuevo_estado'],
+            properties: {
+              nuevo_estado: { type: 'string', enum: ['Disponible','Reservado','Ocupado','Mantenimiento','Bloqueado'], example: 'Reservado' },
+              motivo: { type: 'string', example: 'Reserva por solicitud #456' }
+            }
+          }
+        }
+      }
+    }
+    #swagger.responses[200] = { description: 'Nicho actualizado', schema: { $ref: '#/components/schemas/Nicho' }}
+    #swagger.responses[400] = { description: 'Validación', schema: { $ref: '#/components/schemas/Error' }}
+    #swagger.responses[404] = { description: 'No encontrado', schema: { $ref: '#/components/schemas/Error' }}
+  */
+  return ctrl.cambiarEstado(req, res, next);
+});
+
+// GET /api/nichos/{id}/historial
+router.get('/:id/historial', requireAuth, (req, res, next) => {
+  /*
+    #swagger.tags = ['Nichos']
+    #swagger.summary = 'Historial de cambios de estado de un nicho'
+    #swagger.path = '/api/nichos/{id}/historial'
+    #swagger.security = [{ bearerAuth: [] }]
+    #swagger.parameters['id'] = { in: 'path', required: true, type: 'integer' }
+    #swagger.responses[200] = { description: 'Historial', schema: { type:'array', items: { type:'object', properties: { fecha:{ type:'string' }, de:{ type:'string' }, a:{ type:'string' }, motivo:{ type:'string', nullable:true }, usuario_id:{ type:'integer' } } } } }
+  */
+  return ctrl.historial(req, res, next);
+});
 
 module.exports = router;

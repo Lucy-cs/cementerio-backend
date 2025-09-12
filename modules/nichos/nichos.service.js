@@ -168,3 +168,80 @@ exports.eliminar = async (id) => {
     .query("DELETE FROM dbo.nichos WHERE id = @id; SELECT @@ROWCOUNT AS rows;");
   return !!r.recordset[0].rows;
 };
+
+// ----------------------------------------------
+// CAMBIAR ESTADO con auditoría
+//  - Inserta registro en auditoria (accion JSON)
+//  - Retorna nicho actualizado o null si no existe
+// ----------------------------------------------
+exports.cambiarEstado = async ({ id, nuevo_estado, motivo, usuario_id }) => {
+  const pool = await getConnection();
+  const tx = new sql.Transaction(pool);
+  await tx.begin();
+  try {
+    const reqSelect = new sql.Request(tx).input("id", sql.Int, id);
+    const sel = await reqSelect.query(`SELECT id, numero, estado, manzana_id FROM dbo.nichos WHERE id = @id;`);
+    const current = sel.recordset[0];
+    if (!current) {
+      await tx.rollback();
+      return null;
+    }
+    if (current.estado === nuevo_estado) {
+      await tx.rollback();
+      return { noCambio: true, current };
+    }
+
+    // Actualizar estado
+    const reqUpd = new sql.Request(tx)
+      .input("id", sql.Int, id)
+      .input("estado", sql.NVarChar(20), nuevo_estado);
+    await reqUpd.query(`UPDATE dbo.nichos SET estado = @estado WHERE id = @id;`);
+
+    // Auditoría
+    const accion = JSON.stringify({
+      tipo: "NICHO_ESTADO",
+      nicho_id: id,
+      de: current.estado,
+      a: nuevo_estado,
+      motivo: motivo || null,
+      usuario_id,
+    });
+    const reqAud = new sql.Request(tx)
+      .input("usuario_id", sql.Int, usuario_id)
+      .input("accion", sql.NVarChar(sql.MAX), accion);
+    await reqAud.query(`INSERT INTO dbo.auditoria (usuario_id, accion, fecha) VALUES (@usuario_id, @accion, SYSDATETIMEOFFSET());`);
+
+    await tx.commit();
+    // devolver con join para mantener consistencia
+    return await exports.obtenerPorId(id);
+  } catch (err) {
+    try { await tx.rollback(); } catch (_) {}
+    throw err;
+  }
+};
+
+// ----------------------------------------------
+// HISTORIAL de cambios de estado
+// Retorna array [{ fecha, de, a, motivo, usuario_id }]
+// ----------------------------------------------
+exports.historialEstado = async (id) => {
+  const pool = await getConnection();
+  const r = await pool.request().input("id", sql.Int, id).query(`
+    SELECT a.usuario_id, a.accion, a.fecha
+    FROM dbo.auditoria a
+    WHERE JSON_VALUE(a.accion, '$.tipo') = 'NICHO_ESTADO'
+      AND TRY_CONVERT(INT, JSON_VALUE(a.accion, '$.nicho_id')) = @id
+    ORDER BY a.fecha DESC;
+  `);
+  return r.recordset.map(row => {
+    let parsed = {};
+    try { parsed = JSON.parse(row.accion || '{}'); } catch (_) {}
+    return {
+      fecha: row.fecha,
+      de: parsed.de,
+      a: parsed.a,
+      motivo: parsed.motivo,
+      usuario_id: row.usuario_id,
+    };
+  });
+};

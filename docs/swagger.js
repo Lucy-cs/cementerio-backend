@@ -27,7 +27,7 @@ const options = {
             numero: { type: "integer", example: 12 },
             estado: {
               type: "string",
-              enum: ["Disponible", "Reservado", "Ocupado"],
+              enum: ["Disponible", "Reservado", "Ocupado", "Mantenimiento", "Bloqueado"],
               example: "Disponible"
             },
             manzana_id: { type: "integer", example: 2 },
@@ -41,7 +41,7 @@ const options = {
             numero: { type: "integer", example: 10 },
             estado: {
               type: "string",
-              enum: ["Disponible", "Reservado", "Ocupado"],
+              enum: ["Disponible", "Reservado", "Ocupado", "Mantenimiento", "Bloqueado"],
               default: "Disponible"
             },
             manzana_id: { type: "integer", example: 1 }
@@ -53,7 +53,7 @@ const options = {
             numero: { type: "integer", example: 15 },
             estado: {
               type: "string",
-              enum: ["Disponible", "Reservado", "Ocupado"]
+              enum: ["Disponible", "Reservado", "Ocupado", "Mantenimiento", "Bloqueado"]
             },
             manzana_id: { type: "integer", example: 3 }
           }
