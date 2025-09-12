@@ -34,6 +34,10 @@ app.use("/api/manzanas", manzanasRoutes);
 const propietariosRoutes = require("./modules/propietarios/propietarios.routes");
 app.use("/api/propietarios", propietariosRoutes);
 
+// Rutas Solicitudes
+const solicitudesRoutes = require("./modules/solicitudes/solicitudes.routes");
+app.use("/api/solicitudes", solicitudesRoutes);
+
 // Rutas Catálogos
 const catalogsRoutes = require("./modules/catalogos/catalogos.routes");
 app.use("/api/catalogs", catalogsRoutes);

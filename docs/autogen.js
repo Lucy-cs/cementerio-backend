@@ -179,6 +179,26 @@ const doc = {
           sector_id: { type:"integer", nullable:true, example:null }
         }
       },
+      Solicitud: {
+        type: 'object',
+        properties: {
+          id: { type:'integer', example: 10 },
+          estado: { type:'string', enum:['Pendiente','Aprobada','Rechazada'], example:'Pendiente' },
+          fecha_solicitud: { type:'string', example:'2025-09-11' },
+          propietario: { type:'object', nullable:true, properties: { id:{ type:'integer' }, nombres:{ type:'string' }, apellidos:{ type:'string' }, dpi:{ type:'string' } } },
+          nicho: { type:'object', nullable:true, properties: { id:{ type:'integer' }, numero:{ type:'integer' }, manzana_id:{ type:'integer' }, manzana:{ type:'string' } } },
+          recibo_id: { type:'integer', nullable:true }
+        }
+      },
+      DocumentoSolicitud: {
+        type: 'object',
+        properties: {
+          nombre_archivo: { type:'string', example:'INE.pdf' },
+          ruta_relativa: { type:'string', example:'solicitudes/10/INE.pdf' },
+          mime_type: { type:'string', example:'application/pdf' },
+          tamano_bytes: { type:'integer', example: 23456 }
+        }
+      }
     },
   },
 };
@@ -190,7 +210,8 @@ const endpointsFiles = [
   "./modules/manzanas/manzanas.routes.js",
   "./modules/propietarios/propietarios.routes.js",
   "./modules/catalogos/catalogos.routes.js",
-  "./modules/auth/auth.routes.js"
+  "./modules/auth/auth.routes.js",
+  "./modules/solicitudes/solicitudes.routes.js"
 ];
 
 
