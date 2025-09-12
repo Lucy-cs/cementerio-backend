@@ -27,12 +27,17 @@ router.get("/:id", (req, res, next) => {
   return ctrl.obtenerPorId(req, res, next);
 });
 
-// #swagger.tags = ['Nichos']
-// #swagger.summary = 'Buscar nicho por número + manzana (id o nombre)'
-// #swagger.parameters['numero']    = { in: 'query', required: true, type: 'integer' }
-// #swagger.parameters['manzana_id'] = { in: 'query', required: false, type: 'integer' }
-// #swagger.parameters['manzana']    = { in: 'query', required: false, type: 'string' }
-router.get("/por-numero", ctrl.obtenerPorNumero);
+router.get("/por-numero", (req, res, next) => {
+  /*
+    #swagger.tags = ['Nichos']
+    #swagger.summary = 'Buscar nicho por número + manzana (id o nombre)'
+    #swagger.path = '/api/nichos/por-numero'
+    #swagger.parameters['numero']    = { in: 'query', required: true, type: 'integer' }
+    #swagger.parameters['manzana_id'] = { in: 'query', required: false, type: 'integer' }
+    #swagger.parameters['manzana']    = { in: 'query', required: false, type: 'string' }
+  */
+  return ctrl.obtenerPorNumero(req, res, next);
+});
 
 
 // POST /api/nichos

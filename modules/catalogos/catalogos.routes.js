@@ -11,6 +11,7 @@ router.get("/manzanas", (req, res, next) => {
     #swagger.tags = ['Catálogos']
     #swagger.summary = 'Lista de manzanas (catálogo)'
     #swagger.description = 'Filtra por ?search= y ?includeInactive=[true|false]. Solo manzanas activas por defecto.'
+  #swagger.path = '/api/catalogs/manzanas'
     #swagger.parameters['search'] = { in: 'query', type: 'string' }
     #swagger.parameters['includeInactive'] = { in: 'query', type: 'boolean', default: false }
     #swagger.responses[200] = {
@@ -28,6 +29,7 @@ router.post("/manzanas", (req, res, next) => {
     #swagger.tags = ['Catálogos']
     #swagger.summary = 'Crear/editar/activar/desactivar manzana'
     #swagger.description = 'Si envías id => actualiza; si no => crea. Para desactivar: { id, activo:false }'
+  #swagger.path = '/api/catalogs/manzanas'
     #swagger.requestBody = {
       required: true,
       content: { "application/json": { schema: { $ref:'#/components/schemas/UpsertManzana' },
@@ -52,6 +54,7 @@ router.get("/tarifas", (req, res, next) => {
     #swagger.tags = ['Catálogos']
     #swagger.summary = 'Tarifas vigentes/históricas'
     #swagger.description = 'Consulta por fecha ?on=YYYY-MM-DD (default: hoy). Filtros: concepto, alcance, tipo_nicho_id, manzana_id, sector_id. ?includeHistory=true devuelve todo.'
+  #swagger.path = '/api/catalogs/tarifas'
     #swagger.parameters['on'] = { in: 'query', type:'string', example:'2025-09-08' }
     #swagger.parameters['includeHistory'] = { in:'query', type:'boolean', default:false }
     #swagger.parameters['concepto'] = { in:'query', type:'string' }
@@ -70,6 +73,7 @@ router.post("/tarifas", (req, res, next) => {
     #swagger.tags = ['Catálogos']
     #swagger.summary = 'Nueva vigencia de tarifa (sin solapes)'
     #swagger.description = 'Crea una tarifa válida desde una fecha; valida que no haya solape con otra tarifa del mismo concepto/alcance/dimensiones.'
+  #swagger.path = '/api/catalogs/tarifas'
     #swagger.requestBody = {
       required: true,
       content: { "application/json": { schema: { $ref:'#/components/schemas/CreateTarifa' },
@@ -89,6 +93,7 @@ router.get("/estados-nicho", (req, res, next) => {
   /*
     #swagger.tags = ['Catálogos']
     #swagger.summary = 'Estados permitidos de Nicho'
+  #swagger.path = '/api/catalogs/estados-nicho'
     #swagger.responses[200] = { description:'OK', content:{ "application/json": { schema:{ 
       type:'array', items:{ type:'string', enum:['Disponible','Reservado','Ocupado','Mantenimiento','Bloqueado'] } } } } }
   */

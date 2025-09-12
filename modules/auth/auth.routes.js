@@ -10,6 +10,7 @@ router.post("/login", (req, res, next) => {
     #swagger.tags = ['Auth']
     #swagger.summary = 'Login'
     #swagger.description = 'Autentica por correo + password. Devuelve access_token JWT y refresh_token rotativo.'
+  #swagger.path = '/auth/login'
     #swagger.requestBody = {
       required: true,
       content: { "application/json": { schema: { $ref: '#/components/schemas/LoginRequest' },
@@ -27,6 +28,7 @@ router.post("/refresh", (req, res, next) => {
     #swagger.tags = ['Auth']
     #swagger.summary = 'Refresh token'
     #swagger.description = 'Intercambia el refresh_token por un nuevo par (access y refresh). Rotación segura.'
+  #swagger.path = '/auth/refresh'
     #swagger.requestBody = {
       required: true,
       content: { "application/json": { schema:{ $ref:'#/components/schemas/RefreshRequest' } ,
@@ -44,6 +46,7 @@ router.post("/logout", (req, res, next) => {
     #swagger.tags = ['Auth']
     #swagger.summary = 'Logout'
     #swagger.description = 'Revoca un refresh_token (o todos del usuario si envías Authorization: Bearer + { allDevices:true }).'
+  #swagger.path = '/auth/logout'
     #swagger.requestBody = {
       required: false,
       content: { "application/json": { schema:{ $ref:'#/components/schemas/LogoutRequest' },
@@ -63,6 +66,7 @@ router.get("/me", requireAuth, (req, res, next) => {
   /*
     #swagger.tags = ['Auth']
     #swagger.summary = 'Perfil del usuario autenticado'
+  #swagger.path = '/auth/me'
     #swagger.security = [{ "bearerAuth": [] }]
     #swagger.responses[200] = { description:'OK', content:{ "application/json": { schema:{ $ref:'#/components/schemas/MeUser' } } } }
     #swagger.responses[401] = { description:'Token inválido/ausente' }
