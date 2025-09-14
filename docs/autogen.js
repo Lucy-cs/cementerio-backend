@@ -78,6 +78,16 @@ const doc = {
           observaciones: { type:'string', nullable:true }
         }
       },
+      CreateRecibo: {
+        type:'object', required:['numero_recibo','monto','fecha_pago'],
+        properties: {
+          numero_recibo: { type:'string', example:'R-2025-0001' },
+          monto: { type:'number', example: 100.00 },
+          fecha_pago: { type:'string', format:'date', example:'2025-09-15' },
+          concepto: { type:'string', example:'Mantenimiento' },
+          notas: { type:'string', nullable:true }
+        }
+      },
       Nicho: {
         type: "object",
         properties: {
@@ -274,6 +284,7 @@ const endpointsFiles = [
   "./modules/arrendamientos/arrendamientos.routes.js",
   "./modules/alertas/alertas.routes.js"
   ,"./modules/traspasos/traspasos.routes.js"
+  ,"./modules/recibos/recibos.routes.js"
 ];
 
 
