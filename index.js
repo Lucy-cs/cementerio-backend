@@ -38,6 +38,13 @@ app.use("/api/propietarios", propietariosRoutes);
 const solicitudesRoutes = require("./modules/solicitudes/solicitudes.routes");
 app.use("/api/solicitudes", solicitudesRoutes);
 
+// Rutas Arrendamientos y Alertas
+const arrendamientosRoutes = require("./modules/arrendamientos/arrendamientos.routes");
+app.use("/api/arrendamientos", arrendamientosRoutes);
+
+const alertasRoutes = require("./modules/alertas/alertas.routes");
+app.use("/api/alertas", alertasRoutes);
+
 // Rutas Catálogos
 const catalogsRoutes = require("./modules/catalogos/catalogos.routes");
 app.use("/api/catalogs", catalogsRoutes);

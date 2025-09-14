@@ -19,6 +19,44 @@ const doc = {
       bearerAuth: { type: "http", scheme: "bearer", bearerFormat: "JWT" }
     },
     schemas: {
+      Arrendamiento: {
+        type: 'object',
+        properties: {
+          id: { type:'integer', example: 101 },
+          propietario: { type:'object', properties:{ id:{ type:'integer' }, nombres:{ type:'string' }, apellidos:{ type:'string' }, dpi:{ type:'string' } } },
+          nicho: { type:'object', properties:{ id:{ type:'integer' }, numero:{ type:'integer' }, manzana_id:{ type:'integer' }, manzana:{ type:'string' } } },
+          recibo_id: { type:'integer', nullable:true },
+          fecha_inicio: { type:'string', format:'date' },
+          fecha_fin: { type:'string', format:'date' },
+          nombre_difunto: { type:'string' },
+          estado: { type:'string', enum:['Activo','PorVencer','Vencido','Cancelado'] },
+          dias_para_vencer: { type:'integer', nullable:true }
+        }
+      },
+      CreateArrendamiento: {
+        type:'object', required:['propietario_id','nicho_id','fecha_inicio','recibo'],
+        properties: {
+          propietario_id: { type:'integer' },
+          nicho_id: { type:'integer' },
+          fecha_inicio: { type:'string', format:'date' },
+          nombre_difunto: { type:'string' },
+          recibo: {
+            type:'object', required:['numero_recibo','monto','fecha_pago'],
+            properties: {
+              numero_recibo: { type:'string', example:'A-123456' },
+              monto: { type:'number', format:'double', example: 700.00 },
+              fecha_pago: { type:'string', format:'date' }
+            }
+          }
+        }
+      },
+      RenovacionArrendamiento: {
+        type:'object', required:['recibo'],
+        properties: {
+          recibo: { $ref: '#/components/schemas/CreateArrendamiento/properties/recibo' },
+          observaciones: { type:'string' }
+        }
+      },
       Nicho: {
         type: "object",
         properties: {
@@ -211,7 +249,9 @@ const endpointsFiles = [
   "./modules/propietarios/propietarios.routes.js",
   "./modules/catalogos/catalogos.routes.js",
   "./modules/auth/auth.routes.js",
-  "./modules/solicitudes/solicitudes.routes.js"
+  "./modules/solicitudes/solicitudes.routes.js",
+  "./modules/arrendamientos/arrendamientos.routes.js",
+  "./modules/alertas/alertas.routes.js"
 ];
 
 
