@@ -53,6 +53,10 @@ app.use("/api/catalogs", catalogsRoutes);
 const authRoutes = require("./modules/auth/auth.routes");
 app.use("/auth", authRoutes);
 
+// Rutas Traspasos
+const traspasosRoutes = require("./modules/traspasos/traspasos.routes");
+app.use("/api/traspasos", traspasosRoutes);
+
 
 
 const PORT = process.env.PORT || 3001;

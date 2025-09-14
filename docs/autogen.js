@@ -57,6 +57,27 @@ const doc = {
           observaciones: { type:'string' }
         }
       },
+      Traspaso: {
+        type:'object',
+        properties: {
+          id: { type:'integer', example: 1001 },
+          fecha_traspaso: { type:'string', format:'date' },
+          nicho: { $ref: '#/components/schemas/Nicho' },
+          propietario_anterior: { type:'object', properties:{ id:{ type:'integer' }, nombres:{ type:'string' }, apellidos:{ type:'string' }, dpi:{ type:'string' } } },
+          nuevo_propietario: { type:'object', properties:{ id:{ type:'integer' }, nombres:{ type:'string' }, apellidos:{ type:'string' }, dpi:{ type:'string' } } },
+          recibo: { type:'object', properties:{ id:{ type:'integer' }, numero_recibo:{ type:'string' }, monto:{ type:'number' }, fecha_pago:{ type:'string', format:'date' } } }
+        }
+      },
+      CreateTraspaso: {
+        type:'object', required:['nicho_id','nuevo_propietario_id','recibo'],
+        properties: {
+          nicho_id: { type:'integer' },
+          nuevo_propietario_id: { type:'integer' },
+          fecha_traspaso: { type:'string', format:'date', nullable: true },
+          recibo: { type:'object', required:['numero_recibo'], properties:{ numero_recibo:{ type:'string' }, monto:{ type:'number', example:700 }, fecha_pago:{ type:'string', format:'date' } } },
+          observaciones: { type:'string', nullable:true }
+        }
+      },
       Nicho: {
         type: "object",
         properties: {
@@ -252,6 +273,7 @@ const endpointsFiles = [
   "./modules/solicitudes/solicitudes.routes.js",
   "./modules/arrendamientos/arrendamientos.routes.js",
   "./modules/alertas/alertas.routes.js"
+  ,"./modules/traspasos/traspasos.routes.js"
 ];
 
 
