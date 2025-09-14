@@ -14,6 +14,9 @@ const doc = {
   servers: [
     { url: `http://localhost:${process.env.PORT || 3001}`, description: "Local" },
   ],
+  tags: [
+    { name: 'Reportes', description: 'Consultas de nichos, contratos por vencer, historial de pagos y traspasos' }
+  ],
   components: {
     securitySchemes: {
       bearerAuth: { type: "http", scheme: "bearer", bearerFormat: "JWT" }
@@ -284,6 +287,7 @@ const endpointsFiles = [
   "./modules/arrendamientos/arrendamientos.routes.js",
   "./modules/alertas/alertas.routes.js"
   ,"./modules/traspasos/traspasos.routes.js"
+  ,"./modules/reportes/reportes.routes.js"
   ,"./modules/recibos/recibos.routes.js"
 ];
 

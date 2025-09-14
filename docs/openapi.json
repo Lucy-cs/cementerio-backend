@@ -11,6 +11,12 @@
       "description": "Local"
     }
   ],
+  "tags": [
+    {
+      "name": "Reportes",
+      "description": "Consultas de nichos, contratos por vencer, historial de pagos y traspasos"
+    }
+  ],
   "paths": {
     "/health": {
       "get": {
@@ -2787,6 +2793,156 @@
           },
           "404": {
             "description": "Not Found"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ]
+      }
+    },
+    "/api/reportes/nichos-disponibles": {
+      "get": {
+        "tags": [
+          "Reportes"
+        ],
+        "summary": "Nichos disponibles (opcional: por manzana)",
+        "description": "",
+        "parameters": [
+          {
+            "name": "manzanaId",
+            "in": "query",
+            "schema": {
+              "type": "integer"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ]
+      }
+    },
+    "/api/reportes/contratos-por-vencer": {
+      "get": {
+        "tags": [
+          "Reportes"
+        ],
+        "summary": "Contratos por vencer en N días",
+        "description": "",
+        "parameters": [
+          {
+            "name": "dias",
+            "in": "query",
+            "default": 30,
+            "schema": {
+              "type": "integer"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ]
+      }
+    },
+    "/api/reportes/historial-pagos": {
+      "get": {
+        "tags": [
+          "Reportes"
+        ],
+        "summary": "Historial de pagos por nicho",
+        "description": "",
+        "parameters": [
+          {
+            "name": "predioId",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "integer"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "400": {
+            "description": "Bad Request"
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ]
+      }
+    },
+    "/api/reportes/traspasos": {
+      "get": {
+        "tags": [
+          "Reportes"
+        ],
+        "summary": "Traspasos por rango de fechas",
+        "description": "",
+        "parameters": [
+          {
+            "name": "desde",
+            "in": "query",
+            "format": "date",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "hasta",
+            "in": "query",
+            "format": "date",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "401": {
+            "description": "Unauthorized"
           },
           "500": {
             "description": "Internal Server Error"

@@ -57,6 +57,10 @@ app.use("/auth", authRoutes);
 const traspasosRoutes = require("./modules/traspasos/traspasos.routes");
 app.use("/api/traspasos", traspasosRoutes);
 
+// Rutas Reportes
+const reportesRoutes = require("./modules/reportes/reportes.routes");
+app.use("/api/reportes", reportesRoutes);
+
 // Rutas Recibos
 const recibosRoutes = require("./modules/recibos/recibos.routes");
 app.use("/api/recibos", recibosRoutes);
