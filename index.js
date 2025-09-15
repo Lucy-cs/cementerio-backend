@@ -49,6 +49,10 @@ app.use("/api/alertas", alertasRoutes);
 const catalogsRoutes = require("./modules/catalogos/catalogos.routes");
 app.use("/api/catalogs", catalogsRoutes);
 
+// Rutas Tarifas (catálogos)
+const tarifasRoutes = require("./modules/catalogos/tarifas.routes");
+app.use("/api/catalogs/tarifas", tarifasRoutes);
+
 // Rutas Auth
 const authRoutes = require("./modules/auth/auth.routes");
 app.use("/auth", authRoutes);

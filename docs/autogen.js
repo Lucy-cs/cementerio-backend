@@ -15,7 +15,8 @@ const doc = {
     { url: `http://localhost:${process.env.PORT || 3001}`, description: "Local" },
   ],
   tags: [
-    { name: 'Reportes', description: 'Consultas de nichos, contratos por vencer, historial de pagos y traspasos' }
+  { name: 'Reportes', description: 'Consultas de nichos, contratos por vencer, historial de pagos y traspasos' },
+  { name: 'Tarifas', description: 'Administración de tarifas (catálogos)' }
   ],
   components: {
     securitySchemes: {
@@ -282,6 +283,7 @@ const endpointsFiles = [
   "./modules/manzanas/manzanas.routes.js",
   "./modules/propietarios/propietarios.routes.js",
   "./modules/catalogos/catalogos.routes.js",
+  "./modules/catalogos/tarifas.routes.js",
   "./modules/auth/auth.routes.js",
   "./modules/solicitudes/solicitudes.routes.js",
   "./modules/arrendamientos/arrendamientos.routes.js",

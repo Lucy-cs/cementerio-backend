@@ -15,6 +15,10 @@
     {
       "name": "Reportes",
       "description": "Consultas de nichos, contratos por vencer, historial de pagos y traspasos"
+    },
+    {
+      "name": "Tarifas",
+      "description": "Administración de tarifas (catálogos)"
     }
   ],
   "paths": {
@@ -2421,13 +2425,13 @@
       },
       "post": {
         "tags": [
-          "Catálogos"
+          "Tarifas"
         ],
-        "summary": "Nueva vigencia de tarifa (sin solapes)",
-        "description": "Crea una tarifa válida desde una fecha; valida que no haya solape con otra tarifa del mismo concepto/alcance/dimensiones.",
+        "summary": "Crear una tarifa",
+        "description": "",
         "responses": {
           "201": {
-            "description": "Creado",
+            "description": "Created",
             "content": {
               "application/json": {
                 "schema": {
@@ -2435,6 +2439,12 @@
                 }
               }
             }
+          },
+          "400": {
+            "description": "Bad Request"
+          },
+          "401": {
+            "description": "Unauthorized"
           },
           "409": {
             "description": "Conflicto: solapa con una tarifa vigente en ese alcance/fecha"
@@ -2446,6 +2456,11 @@
             "description": "Internal Server Error"
           }
         },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
         "requestBody": {
           "required": true,
           "content": {
@@ -2454,11 +2469,14 @@
                 "$ref": "#/components/schemas/CreateTarifa"
               },
               "example": {
-                "concepto": "ARRIENDO_7AÑOS",
+                "concepto": "ARRIENDO_7A",
                 "alcance": "GLOBAL",
-                "monto": 700,
+                "monto": 750,
                 "moneda": "GTQ",
-                "vigencia_desde": "2025-01-01"
+                "vigencia_desde": "2025-01-01",
+                "fecha_inicio": "2025-10-01",
+                "vigente": true,
+                "notas": "Ajuste municipal 2025"
               }
             }
           }
@@ -2497,6 +2515,134 @@
             "description": "Internal Server Error"
           }
         }
+      }
+    },
+    "/api/catalogs/tarifas/{id}": {
+      "put": {
+        "tags": [
+          "Tarifas"
+        ],
+        "summary": "Actualizar una tarifa",
+        "description": "",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "400": {
+            "description": "Bad Request"
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "404": {
+            "description": "Not Found"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateTarifa"
+              },
+              "example": {
+                "monto": 780,
+                "fecha_inicio": "2025-11-01",
+                "vigente": true,
+                "notas": "Revisión Q30"
+              }
+            }
+          }
+        }
+      },
+      "delete": {
+        "tags": [
+          "Tarifas"
+        ],
+        "summary": "Eliminar una tarifa",
+        "description": "",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "No Content"
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ]
+      }
+    },
+    "/api/catalogs/tarifas/{id}/desactivar": {
+      "patch": {
+        "tags": [
+          "Tarifas"
+        ],
+        "summary": "Desactivar una tarifa",
+        "description": "",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "404": {
+            "description": "Not Found"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ]
       }
     },
     "/auth/login": {
