@@ -16,7 +16,8 @@ const doc = {
   ],
   tags: [
   { name: 'Reportes', description: 'Consultas de nichos, contratos por vencer, historial de pagos y traspasos' },
-  { name: 'Tarifas', description: 'Administración de tarifas (catálogos)' }
+  { name: 'Tarifas', description: 'Administración de tarifas (catálogos)' },
+  { name: 'Auditoria', description: 'Consulta de eventos de auditoría con filtros y paginación' }
   ],
   components: {
     securitySchemes: {
@@ -291,6 +292,7 @@ const endpointsFiles = [
   ,"./modules/traspasos/traspasos.routes.js"
   ,"./modules/reportes/reportes.routes.js"
   ,"./modules/recibos/recibos.routes.js"
+  ,"./modules/auditoria/auditoria.routes.js"
 ];
 
 

@@ -2,36 +2,94 @@
 const { getConnection, sql } = require("../../config/db");
 
 // ----------------------------------------------
-// LISTAR con filtros opcionales
+// LISTAR con filtros y propietario actual + paginación
 // ----------------------------------------------
-exports.listar = async ({ manzana, estado, search }) => {
+exports.listar = async ({ manzanaId, estado, q, page, pageSize }) => {
   const pool = await getConnection();
-  const req = pool.request();
+  const off = (page - 1) * pageSize;
 
-  const where = [];
-  if (manzana) {
-    where.push("m.nombre = @manzana");
-    req.input("manzana", sql.NVarChar(50), manzana);
-  }
-  if (estado) {
-    where.push("n.estado = @estado");
-    req.input("estado", sql.NVarChar(20), estado);
-  }
-  if (search) {
-    where.push("(CAST(n.numero AS NVARCHAR(20)) LIKE @q OR n.id = TRY_CONVERT(INT, @q))");
-    req.input("q", sql.NVarChar(100), `%${search}%`);
-  }
+  const req1 = new sql.Request(pool)
+    .input("manzanaId", sql.Int, manzanaId)
+    .input("estado", sql.VarChar(20), estado)
+    .input("q", sql.VarChar(100), q ? `%${q}%` : null)
+    .input("off", sql.Int, off)
+    .input("ps", sql.Int, pageSize);
 
-  const q = `
-    SELECT n.id, n.numero, n.estado,
-           m.id AS manzana_id, m.nombre AS manzana
-    FROM dbo.nichos n
-    LEFT JOIN dbo.manzanas m ON m.id = n.manzana_id
-    ${where.length ? "WHERE " + where.join(" AND ") : ""}
-    ORDER BY m.nombre, n.numero;
+  const sqlListado = `
+  DECLARE @today date = CAST(GETDATE() AS date);
+
+  ;WITH owner AS (
+    SELECT n.id AS nicho_id,
+           COALESCE(t.nuevo_propietario_id, a.propietario_id) AS propietario_id
+    FROM nichos n
+    OUTER APPLY (
+      SELECT TOP 1 nuevo_propietario_id
+      FROM traspasos t
+      WHERE t.nicho_id = n.id
+      ORDER BY t.fecha_traspaso DESC, t.id DESC
+    ) t
+    OUTER APPLY (
+      SELECT TOP 1 propietario_id
+      FROM arrendamientos a
+      WHERE a.nicho_id = n.id
+        AND @today BETWEEN a.fecha_inicio AND a.fecha_fin
+      ORDER BY a.fecha_fin DESC, a.id DESC
+    ) a
+  )
+  SELECT n.id, n.numero, n.estado,
+         m.id AS manzana_id, m.nombre AS manzana,
+         p.id AS propietario_id,
+         CONCAT(COALESCE(p.nombres,''),' ',COALESCE(p.apellidos,'')) AS propietario,
+         p.dpi
+  FROM nichos n
+  JOIN manzanas m ON m.id = n.manzana_id
+  LEFT JOIN owner ow ON ow.nicho_id = n.id
+  LEFT JOIN propietarios p ON p.id = ow.propietario_id
+  WHERE (@manzanaId IS NULL OR n.manzana_id = @manzanaId)
+    AND (@estado    IS NULL OR n.estado     = @estado)
+    AND (
+      @q IS NULL OR
+      CAST(n.numero AS varchar(10)) LIKE @q OR
+      (p.nombres + ' ' + p.apellidos) LIKE @q OR
+      p.dpi LIKE @q
+    )
+  ORDER BY m.nombre, n.numero
+  OFFSET @off ROWS FETCH NEXT @ps ROWS ONLY;
   `;
-  const r = await req.query(q);
-  return r.recordset;
+
+  const sqlTotal = `
+  DECLARE @today date = CAST(GETDATE() AS date);
+  ;WITH owner AS (
+    SELECT n.id AS nicho_id,
+           COALESCE(t.nuevo_propietario_id, a.propietario_id) AS propietario_id
+    FROM nichos n
+    OUTER APPLY (SELECT TOP 1 nuevo_propietario_id FROM traspasos t WHERE t.nicho_id = n.id ORDER BY t.fecha_traspaso DESC, t.id DESC) t
+    OUTER APPLY (SELECT TOP 1 propietario_id FROM arrendamientos a WHERE a.nicho_id = n.id AND @today BETWEEN a.fecha_inicio AND a.fecha_fin ORDER BY a.fecha_fin DESC, a.id DESC) a
+  )
+  SELECT COUNT(1) AS total
+  FROM nichos n
+  JOIN manzanas m ON m.id = n.manzana_id
+  LEFT JOIN owner ow ON ow.nicho_id = n.id
+  LEFT JOIN propietarios p ON p.id = ow.propietario_id
+  WHERE (@manzanaId IS NULL OR n.manzana_id = @manzanaId)
+    AND (@estado    IS NULL OR n.estado     = @estado)
+    AND (
+      @q IS NULL OR
+      CAST(n.numero AS varchar(10)) LIKE @q OR
+      (p.nombres + ' ' + p.apellidos) LIKE @q OR
+      p.dpi LIKE @q
+    );`;
+
+  const [rows, total] = await Promise.all([
+    req1.query(sqlListado),
+    new sql.Request(pool)
+      .input("manzanaId", sql.Int, manzanaId)
+      .input("estado", sql.VarChar(20), estado)
+      .input("q", sql.VarChar(100), q ? `%${q}%` : null)
+      .query(sqlTotal)
+  ]);
+
+  return { data: rows.recordset, page, pageSize, total: total.recordset[0].total };
 };
 
 // ----------------------------------------------

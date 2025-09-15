@@ -2,24 +2,23 @@
 const service = require("./nichos.service");
 const M = require("./nichos.model");
 
-// GET /api/nichos?manzana=A&estado=Disponible&search=12
+// GET /api/nichos?manzanaId=&estado=&q=&page=&pageSize=
 exports.listar = async (req, res) => {
   try {
-    const { manzana, estado, search } = req.query;
+    const manzanaId = req.query.manzanaId ? Number(req.query.manzanaId) : null;
+    const estado    = req.query.estado?.trim() || null;
+    const q         = req.query.q?.trim() || null;
+    const page      = Math.max(1, Number(req.query.page||1));
+    const pageSize  = Math.min(100, Math.max(1, Number(req.query.pageSize||20)));
 
-    // valida el filtro "estado" si viene
     if (estado && !M.estadosValidos.includes(estado)) {
-      return res
-        .status(400)
-        .json({ message: `Estado inválido. Use: ${M.estadosValidos.join(", ")}` });
+      return res.status(400).json({ message: `Estado inválido. Use: ${M.estadosValidos.join(", ")}` });
     }
 
-    const data = await service.listar({ manzana, estado, search });
-    return res.json(data.map(M.fromDb));
+    const out = await service.listar({ manzanaId, estado, q, page, pageSize });
+    return res.json(out);
   } catch (err) {
-    return res
-      .status(500)
-      .json({ message: "Error al listar nichos", error: err.message });
+    return res.status(500).json({ message: "Error al listar nichos", error: err.message });
   }
 };
 

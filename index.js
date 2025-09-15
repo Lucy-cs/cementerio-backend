@@ -69,6 +69,10 @@ app.use("/api/reportes", reportesRoutes);
 const recibosRoutes = require("./modules/recibos/recibos.routes");
 app.use("/api/recibos", recibosRoutes);
 
+// Rutas Auditoría
+const auditoriaRoutes = require("./modules/auditoria/auditoria.routes");
+app.use("/api/auditoria", auditoriaRoutes);
+
 
 
 const PORT = process.env.PORT || 3001;

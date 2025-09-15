@@ -19,6 +19,10 @@
     {
       "name": "Tarifas",
       "description": "Administración de tarifas (catálogos)"
+    },
+    {
+      "name": "Auditoria",
+      "description": "Consulta de eventos de auditoría con filtros y paginación"
     }
   ],
   "paths": {
@@ -38,13 +42,13 @@
           "Nichos"
         ],
         "summary": "Listar nichos",
-        "description": "Permite filtrar por manzana, estado y search",
+        "description": "Filtros por manzanaId, estado y q (número o propietario); incluye paginación",
         "parameters": [
           {
-            "name": "manzana",
+            "name": "manzanaId",
             "in": "query",
             "schema": {
-              "type": "string"
+              "type": "integer"
             }
           },
           {
@@ -53,17 +57,35 @@
             "enum": [
               "Disponible",
               "Reservado",
-              "Ocupado"
+              "Ocupado",
+              "Mantenimiento",
+              "Bloqueado"
             ],
             "schema": {
               "type": "string"
             }
           },
           {
-            "name": "search",
+            "name": "q",
             "in": "query",
             "schema": {
               "type": "string"
+            }
+          },
+          {
+            "name": "page",
+            "in": "query",
+            "default": 1,
+            "schema": {
+              "type": "integer"
+            }
+          },
+          {
+            "name": "pageSize",
+            "in": "query",
+            "default": 20,
+            "schema": {
+              "type": "integer"
             }
           }
         ],
@@ -74,10 +96,18 @@
           "400": {
             "description": "Bad Request"
           },
+          "401": {
+            "description": "Unauthorized"
+          },
           "500": {
             "description": "Internal Server Error"
           }
-        }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ]
       },
       "post": {
         "tags": [
@@ -3240,6 +3270,86 @@
           },
           "404": {
             "description": "Not Found"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ]
+      }
+    },
+    "/api/auditoria": {
+      "get": {
+        "tags": [
+          "Auditoria"
+        ],
+        "summary": "Listar auditoría con filtros y paginación",
+        "description": "",
+        "parameters": [
+          {
+            "name": "desde",
+            "in": "query",
+            "format": "date",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "hasta",
+            "in": "query",
+            "format": "date",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "usuarioId",
+            "in": "query",
+            "schema": {
+              "type": "integer"
+            }
+          },
+          {
+            "name": "accion",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "q",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "page",
+            "in": "query",
+            "default": 1,
+            "schema": {
+              "type": "integer"
+            }
+          },
+          {
+            "name": "pageSize",
+            "in": "query",
+            "default": 50,
+            "schema": {
+              "type": "integer"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "401": {
+            "description": "Unauthorized"
           },
           "500": {
             "description": "Internal Server Error"

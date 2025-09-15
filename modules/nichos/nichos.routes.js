@@ -4,15 +4,18 @@ const ctrl = require("./nichos.controller");
 const { requireAuth } = require("../../middlewares/auth");
 
 // GET /api/nichos
-router.get("/", (req, res, next) => {
+router.get("/", requireAuth, (req, res, next) => {
   /* 
     #swagger.tags = ['Nichos']
     #swagger.summary = 'Listar nichos'
-    #swagger.description = 'Permite filtrar por manzana, estado y search'
+  #swagger.description = 'Filtros por manzanaId, estado y q (número o propietario); incluye paginación'
     #swagger.path = '/api/nichos'
-    #swagger.parameters['manzana'] = { in: 'query', type: 'string' }
-    #swagger.parameters['estado']  = { in: 'query', type: 'string', enum: ['Disponible','Reservado','Ocupado'] }
-    #swagger.parameters['search']  = { in: 'query', type: 'string' }
+  #swagger.security = [{ bearerAuth: [] }]
+  #swagger.parameters['manzanaId'] = { in: 'query', type: 'integer' }
+  #swagger.parameters['estado']  = { in: 'query', type: 'string', enum: ['Disponible','Reservado','Ocupado','Mantenimiento','Bloqueado'] }
+  #swagger.parameters['q']  = { in: 'query', type: 'string' }
+  #swagger.parameters['page']  = { in: 'query', type: 'integer', default: 1 }
+  #swagger.parameters['pageSize']  = { in: 'query', type: 'integer', default: 20 }
   */
   return ctrl.listar(req, res, next);
 });
